@@ -200,58 +200,129 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ----- Buttons (enhanced) ----- */
 .btn-primary-soft {
-  background: var(--primary-soft);
-  color: var(--primary);
-  border: none;
-  border-radius: var(--radius-full);
-  padding: 0.6rem 1.8rem;
-  font-weight: 550;
-  transition: all var(--transition-fast);
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+  border: none !important;
+  border-radius: var(--radius-full) !important;
+  padding: 0.6rem 1.8rem !important;
+  font-weight: 550 !important;
+  transition: all var(--transition-fast) !important;
+  -webkit-text-fill-color: var(--primary) !important;
 }
 
 .btn-primary-soft:hover {
-  background: #d0e4ff;
+  background: #d0e4ff !important;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  color: var(--primary) !important;
+  -webkit-text-fill-color: var(--primary) !important;
 }
 
 .btn-primary-gradient {
-  background: var(--primary-gradient);
-  color: white;
-  border: none;
-  border-radius: var(--radius-full);
-  padding: 0.7rem 2rem;
-  font-weight: 600;
-  transition: all var(--transition-base);
-  box-shadow: 0 4px 16px rgba(13, 110, 253, 0.25);
+  background: var(--primary-gradient) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--radius-full) !important;
+  padding: 0.7rem 2rem !important;
+  font-weight: 600 !important;
+  transition: all var(--transition-base) !important;
+  box-shadow: 0 4px 16px rgba(13, 110, 253, 0.25) !important;
+  -webkit-text-fill-color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  position: relative;
+  z-index: 1;
+  min-width: 120px;
+  letter-spacing: 0.02em;
 }
 
 .btn-primary-gradient:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 28px rgba(13, 110, 253, 0.35);
-  color: white;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 8px 28px rgba(13, 110, 253, 0.35) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.btn-primary-gradient:active {
+  transform: translateY(-1px) scale(0.98) !important;
+}
+
+/* Ensure all child elements in gradient buttons are white */
+.btn-primary-gradient *,
+.btn-primary-gradient i,
+.btn-primary-gradient svg,
+.btn-primary-gradient span {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Fix for Bootstrap button conflicts */
+button.btn-primary-gradient {
+  background: linear-gradient(135deg, #0d6efd 0%, #6ea8fe 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: none !important;
 }
 
 .btn-outline-primary-soft {
-  background: transparent;
-  color: var(--primary);
-  border: 2px solid rgba(13, 110, 253, 0.15);
-  border-radius: var(--radius-full);
-  padding: 0.6rem 1.8rem;
-  font-weight: 550;
-  transition: all var(--transition-fast);
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: 2px solid rgba(13, 110, 253, 0.15) !important;
+  border-radius: var(--radius-full) !important;
+  padding: 0.6rem 1.8rem !important;
+  font-weight: 550 !important;
+  transition: all var(--transition-fast) !important;
+  -webkit-text-fill-color: var(--primary) !important;
 }
 
 .btn-outline-primary-soft:hover {
-  background: var(--primary-soft);
-  border-color: var(--primary);
+  background: var(--primary-soft) !important;
+  border-color: var(--primary) !important;
   transform: translateY(-2px);
+  color: var(--primary) !important;
+  -webkit-text-fill-color: var(--primary) !important;
 }
 
 .btn-icon {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Loading state for buttons */
+.btn-primary-gradient.loading,
+.btn-primary-gradient.loading:hover {
+  pointer-events: none;
+  opacity: 0.85;
+  position: relative;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.btn-primary-gradient.loading::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: button-spin 0.6s linear infinite;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+@keyframes button-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled state */
+.btn-primary-gradient:disabled,
+.btn-primary-gradient.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 /* ----- Upload Zone (better contrast & feedback) ----- */
@@ -661,6 +732,11 @@ h1, h2, h3, h4, h5, h6 {
   .step-arrow:hover {
     transform: rotate(90deg) translateX(4px);
   }
+  
+  .btn-primary-gradient {
+    padding: 0.6rem 1.5rem !important;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -679,6 +755,11 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.3rem;
     bottom: 1.2rem;
     right: 1.2rem;
+  }
+  
+  .btn-primary-gradient {
+    width: 100%;
+    justify-content: center !important;
   }
 }
 
@@ -733,4 +814,3 @@ h1, h2, h3, h4, h5, h6 {
 /* ============================================
    END – Enhanced Stylesheet
    ============================================ */
-
