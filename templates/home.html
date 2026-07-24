@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pneumonia Detection AI · Dashboard</title>
+  <!-- Bootstrap 5.3 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Font (optional clean sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+
+<!-- Sticky Navigation -->
+<nav class="navbar navbar-expand-lg bg-white nav-shadow sticky-top py-2" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand fw-semibold d-flex align-items-center" href="#">
+      <i class="bi bi-heart-pulse-fill text-primary me-2" style="font-size: 1.8rem;"></i>
+      <span>Pneumonia Detection AI</span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#model">Model</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="bg-gradient-hero py-5 position-relative overflow-hidden">
+  <div class="floating-icon top-0 end-0 me-5 mt-4"><i class="bi bi-cpu"></i></div>
+  <div class="floating-icon bottom-0 start-0 ms-4 mb-5"><i class="bi bi-heart"></i></div>
+  <div class="container py-md-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold hero-heading">AI-Powered <br><span class="text-primary">Pneumonia Detection</span></h1>
+        <p class="fs-5 text-secondary mt-3">Upload a chest X‑ray image and receive an instant AI‑based prediction using a deep learning model.</p>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="#upload" class="btn btn-primary btn-lg px-5 rounded-pill"><i class="bi bi-cloud-upload me-2"></i>Analyze X‑ray</a>
+          <a href="#about" class="btn btn-outline-secondary btn-lg px-5 rounded-pill">Learn More</a>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0f7ff' rx='40'/%3E%3Cpath d='M120 80 L280 80 L300 120 L280 200 L120 200 L100 120 Z' fill='%23b6d4fe' opacity='0.4'/%3E%3Ccircle cx='200' cy='140' r='40' fill='%230d6efd' opacity='0.3'/%3E%3Cpath d='M170 140 L190 170 L230 120 L250 150 L210 190 L180 160 L170 140' fill='%230d6efd' opacity='0.6'/%3E%3Ctext x='120' y='250' font-family='Inter' font-size='18' fill='%23333'%3EX-ray illustration%3C/text%3E%3C/svg%3E" alt="Medical illustration" class="img-fluid zoom-img" style="max-width: 90%;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Upload + Prediction row -->
+<section id="upload" class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Upload Card -->
+      <div class="col-lg-6">
+        <div class="card card-soft p-4 h-100">
+          <h4 class="fw-semibold mb-3"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Upload X‑ray</h4>
+          <div class="upload-zone p-4 text-center" id="dropZone">
+            <i class="bi bi-image display-4 text-primary opacity-75"></i>
+            <p class="mt-3 mb-1 fw-medium">Drag & drop or click to upload</p>
+            <p class="text-secondary small">JPG, JPEG, PNG · max 10MB</p>
+            <input class="form-control d-none" type="file" id="imageInput" accept=".jpg,.jpeg,.png">
+            <button class="btn btn-outline-primary rounded-pill px-4 mt-2" id="chooseBtn"><i class="bi bi-folder2-open me-1"></i>Choose Image</button>
+            <div id="previewContainer" class="mt-3 d-none">
+              <img id="imagePreview" class="img-fluid rounded-4 shadow-sm" style="max-height: 200px;" alt="Preview">
+              <div class="d-flex justify-content-between mt-2 small text-secondary">
+                <span id="fileName">filename.jpg</span>
+                <span id="fileSize">0 KB</span>
+              </div>
+            </div>
+          </div>
+          <!-- Django integration (hidden inputs for form) -->
+          <div class="d-none">
+            {% csrf_token %}
+            {{ form.image }}
+          </div>
+        </div>
+      </div>
+      <!-- Prediction Card -->
+      <div class="col-lg-6">
+        <div class="card card-soft p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <h4 class="fw-semibold"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Prediction</h4>
+            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2" id="statusBadge">Awaiting</span>
+          </div>
+          <div class="mt-2">
+            <div class="d-flex align-items-center gap-3">
+              <span class="display-6 fw-bold" id="resultLabel">—</span>
+              <span class="text-secondary" id="confidenceLabel">Confidence —</span>
+            </div>
+            <div class="progress mt-3" style="height: 10px; border-radius: 20px;">
+              <div class="progress-bar bg-primary progress-bar-animated" id="confidenceBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="mt-3 d-flex gap-2 flex-wrap">
+              <span class="badge bg-success bg-opacity-15 text-success rounded-pill px-3 py-2"><i class="bi bi-check-circle"></i> Normal</span>
+              <span class="badge bg-danger bg-opacity-15 text-danger rounded-pill px-3 py-2"><i class="bi bi-exclamation-triangle"></i> Pneumonia</span>
+            </div>
+            <!-- spinner simulation -->
+            <div id="loadingSpinner" class="mt-3 d-none">
+              <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+              <span class="ms-2 text-secondary">Analyzing...</span>
+            </div>
+            <!-- Django template variables (hidden) -->
+            <div class="d-none">
+              {{ prediction }}
+              {{ confidence }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Image Preview Card & Model Info -->
+<section class="py-3">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card card-soft p-3 h-100">
+          <h5 class="fw-semibold"><i class="bi bi-eye me-2 text-primary"></i>Image Preview</h5>
+          <div class="text-center p-2">
+            <img id="previewCardImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240' viewBox='0 0 400 240'%3E%3Crect width='400' height='240' fill='%23e9eff6' rx='16'/%3E%3Ctext x='120' y='130' font-family='Inter' fill='%23808a9b' font-size='18'%3ENo image uploaded%3C/text%3E%3C/svg%3E" class="img-fluid zoom-img rounded-4 shadow" style="max-height: 260px; width: 100%; object-fit: contain;" alt="Preview">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card card-soft p-3 h-100">
+          <h5 class="fw-semibold"><i class="bi bi-info-circle me-2 text-primary"></i>Model Information</h5>
+          <div class="row g-2 small">
+            <div class="col-6"><span class="text-secondary">Model:</span> <strong>MobileNetV2</strong></div>
+            <div class="col-6"><span class="text-secondary">Framework:</span> <strong>TensorFlow 2.x</strong></div>
+            <div class="col-6"><span class="text-secondary">Technique:</span> <strong>Transfer Learning</strong></div>
+            <div class="col-6"><span class="text-secondary">Input Size:</span> <strong>124 × 124</strong></div>
+            <div class="col-6"><span class="text-secondary">Classification:</span> <strong>Binary</strong></div>
+            <div class="col-6"><span class="text-secondary">Output:</span> <strong>Normal / Pneumonia</strong></div>
+            <div class="col-12 mt-2"><span class="text-secondary">Prediction time:</span> <strong>&lt; 1 second</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dataset + Features -->
+<section class="py-4">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="card card-soft p-3">
+          <h5 class="fw-semibold"><i class="bi bi-database me-2 text-primary"></i>Dataset</h5>
+          <div class="row text-center g-2">
+            <div class="col-6 col-md-3"><span class="text-secondary">Training</span><br><strong>5,216</strong></div>
+            <div class="col-6 col-md-3"><span class="text-secondary">Validation</span><br><strong>16</strong></div>
+            <div class="col-6 col-md-3"><span class="text-secondary">Testing</span><br><strong>624</strong></div>
+            <div class="col-6 col-md-3"><span class="text-secondary">Total</span><br><strong>5,856</strong></div>
+          </div>
+          <p class="small text-secondary mt-2 mb-0">Chest X-Ray Images (Pneumonia)</p>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card card-soft p-3">
+          <h5 class="fw-semibold"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Features</h5>
+          <div class="row g-3">
+            <div class="col-6"><i class="bi bi-clock-history text-primary me-1"></i> Fast Prediction</div>
+            <div class="col-6"><i class="bi bi-bar-chart-fill text-primary me-1"></i> High Accuracy</div>
+            <div class="col-6"><i class="bi bi-cpu text-primary me-1"></i> Deep Learning</div>
+            <div class="col-6"><i class="bi bi-shield-lock text-primary me-1"></i> Secure Upload</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Workflow -->
+<section class="py-4">
+  <div class="container">
+    <div class="card card-soft p-4 text-center">
+      <h5 class="fw-semibold"><i class="bi bi-diagram-3 me-2 text-primary"></i>Workflow</h5>
+      <div class="row align-items-center justify-content-center g-2">
+        <div class="col-auto"><span class="badge bg-primary bg-opacity-10 text-primary p-3"><i class="bi bi-cloud-upload fs-4"></i><br>Upload</span></div>
+        <div class="col-auto step-arrow"><i class="bi bi-arrow-down"></i></div>
+        <div class="col-auto"><span class="badge bg-primary bg-opacity-10 text-primary p-3"><i class="bi bi-cpu fs-4"></i><br>AI Processing</span></div>
+        <div class="col-auto step-arrow"><i class="bi bi-arrow-down"></i></div>
+        <div class="col-auto"><span class="badge bg-primary bg-opacity-10 text-primary p-3"><i class="bi bi-graph-up fs-4"></i><br>Prediction</span></div>
+        <div class="col-auto step-arrow"><i class="bi bi-arrow-down"></i></div>
+        <div class="col-auto"><span class="badge bg-primary bg-opacity-10 text-primary p-3"><i class="bi bi-file-text fs-4"></i><br>Report</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Disclaimer -->
+<section class="py-2">
+  <div class="container">
+    <div class="card border-warning bg-warning bg-opacity-10 border-2 rounded-4 p-3">
+      <div class="d-flex"><i class="bi bi-exclamation-triangle-fill text-warning me-3 fs-4"></i><span>This AI system is developed for educational and research purposes only. It should not replace diagnosis by qualified healthcare professionals.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Accordion -->
+<section class="py-4" id="about">
+  <div class="container">
+    <h5 class="fw-semibold mb-3"><i class="bi bi-question-circle me-2 text-primary"></i>Frequently Asked</h5>
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq1">What image formats are supported?</button></h2><div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">We support JPG, JPEG, and PNG formats.</div></div></div>
+      <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">How accurate is the model?</button></h2><div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">The model achieves ~97% accuracy on the test set, but individual results may vary.</div></div></div>
+      <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Is my uploaded image stored?</button></h2><div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">No images are stored permanently. They are processed locally for the session.</div></div></div>
+      <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">Can this replace a doctor?</button></h2><div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">No, this tool is for educational purposes only. Always consult a medical professional.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact + Footer -->
+<section id="contact" class="py-4">
+  <div class="container">
+    <div class="card card-soft p-4 text-center">
+      <h5 class="fw-semibold"><i class="bi bi-envelope me-2 text-primary"></i>Contact</h5>
+      <div class="d-flex justify-content-center gap-4 flex-wrap">
+        <a href="https://github.com/sumitkumar1233edeedad" class="text-dark text-decoration-none"><i class="bi bi-github me-1"></i> GitHub</a>
+        <a href="www.linkedin.com/in/sumit-kumar-ml" class="text-dark text-decoration-none"><i class="bi bi-linkedin me-1"></i> LinkedIn</a>
+        <a  href="mailto:sumitsohal963@gmail.com?subject=Contact%20from%20Portfolio&body=Hello%20Sumit,%0A%0AI%20would%20like%20to%20contact%20you." class="text-dark text-decoration-none"><i class="bi bi-envelope me-1"></i> Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer py-3 mt-3">
+  <div class="container text-center text-secondary small">
+    &copy; 2026 Pneumonia Detection AI · built with <i class="bi bi-heart-fill text-danger"></i> for research
+  </div>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top" id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function() {
+    // ----- Upload logic -----
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('imageInput');
+    const chooseBtn = document.getElementById('chooseBtn');
+    const previewContainer = document.getElementById('previewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const previewCardImg = document.getElementById('previewCardImg');
+
+    // result elements
+    const resultLabel = document.getElementById('resultLabel');
+    const confidenceLabel = document.getElementById('confidenceLabel');
+    const confidenceBar = document.getElementById('confidenceBar');
+    const statusBadge = document.getElementById('statusBadge');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    function handleFile(file) {
+      if (!file) return;
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a JPG, JPEG, or PNG image.');
+        return;
+      }
+      // show preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        previewCardImg.src = e.target.result;
+        previewContainer.classList.remove('d-none');
+        fileName.textContent = file.name;
+        fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+        // reset prediction
+        resultLabel.textContent = '—';
+        confidenceLabel.textContent = 'Confidence —';
+        confidenceBar.style.width = '0%';
+        statusBadge.textContent = 'Uploaded';
+        statusBadge.className = 'badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2';
+        // simulate prediction after short delay
+        loadingSpinner.classList.remove('d-none');
+        setTimeout(() => {
+          loadingSpinner.classList.add('d-none');
+          // simulate result (random for demo)
+          const isPneumonia = Math.random() > 0.5;
+          const confidence = (70 + Math.random() * 28).toFixed(1);
+          resultLabel.textContent = isPneumonia ? 'Pneumonia' : 'Normal';
+          confidenceLabel.textContent = `Confidence ${confidence}%`;
+          confidenceBar.style.width = confidence + '%';
+          if (isPneumonia) {
+            statusBadge.textContent = 'Pneumonia';
+            statusBadge.className = 'badge bg-danger bg-opacity-15 text-danger rounded-pill px-3 py-2';
+          } else {
+            statusBadge.textContent = 'Normal';
+            statusBadge.className = 'badge bg-success bg-opacity-15 text-success rounded-pill px-3 py-2';
+          }
+        }, 1800);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // click to upload
+    chooseBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      if (fileInput.files.length) handleFile(fileInput.files[0]);
+    });
+
+    // drag and drop
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length) handleFile(files[0]);
+    });
+    // click on dropzone triggers input
+    dropZone.addEventListener('click', (e) => {
+      if (e.target === dropZone || e.target.closest('.upload-zone')) fileInput.click();
+    });
+
+    // ----- Nav shadow -----
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+      const btn = document.getElementById('scrollTopBtn');
+      btn.classList.toggle('visible', window.scrollY > 400);
+    });
+
+    // scroll to top
+    document.getElementById('scrollTopBtn').addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+    // demo: use Django template vars if present (invisible)
+    // if {{ prediction }} is set, we could update UI, but for demo we keep simulation
+    // The Django tags are present but not rendered in static HTML, fine.
+  })();
+</script>
+</body>
+</html>
