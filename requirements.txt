@@ -1,6 +1,6 @@
 Django
 gunicorn
 whitenoise
-tensorflow-cpu
+tensorflow
 numpy
 Pillow
